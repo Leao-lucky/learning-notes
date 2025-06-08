@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -5,7 +6,8 @@ public class LeetCode {
 
     /**
      * https://leetcode.cn/problems/two-sum/description/
-     * @param nums 自解
+     *
+     * @param nums   自解
      * @param target
      * @return
      */
@@ -22,7 +24,8 @@ public class LeetCode {
 
     /**
      * https://leetcode.cn/problems/two-sum/description/
-     * @param nums 官解
+     *
+     * @param nums   官解
      * @param target
      * @return
      */
@@ -56,6 +59,7 @@ public class LeetCode {
 
     /**
      * https://leetcode.cn/problems/add-two-numbers/description/
+     *
      * @param l1
      * @param l2
      * @return
@@ -88,6 +92,49 @@ public class LeetCode {
             }
         }
         return head.next;
+    }
+
+    public int longestLength = 0;
+    /**
+     * https://leetcode.cn/problems/longest-substring-without-repeating-characters/
+     * 此解法超时
+     * @param s
+     */
+    public void lengthOfLongestSubstring(String s) {
+        if (s.length() <= 1 || !hasRepeatChar(s)) {
+            if (s.length() > longestLength) {
+                longestLength = s.length();
+            }
+            return;
+        }
+        for (int i = 0; i < 2; i++) {
+            lengthOfLongestSubstring(s.substring(i, s.length() - 1 + i));
+        }
+    }
+
+    public boolean hasRepeatChar(String str) {
+        HashMap<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < str.length(); i++) {
+            if (map.containsKey(str.substring(i, i + 1))) {
+                return true;
+            } else {
+                map.put(str.substring(i, i + 1), i);
+            }
+        }
+        return false;
+    }
+
+    public int lengthOfLongestSubstring2(String s) {
+        int start = 0, result = 0;
+        int[] last = new int[128];
+        Arrays.fill(last, -1);
+        for (int i = 0; i < s.length(); i++) {
+            int index = s.charAt(i);
+            start = Math.max(start, last[index]);
+            result = Math.max(result, i - start + 1);
+            last[index] = i;
+        }
+        return result;
     }
 
 
