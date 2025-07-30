@@ -1,6 +1,4 @@
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LeetCode {
 
@@ -326,9 +324,291 @@ public class LeetCode {
 
     /**
      * 12* 轮转数组
+     * 普通做法
+     * <a href="https://leetcode.cn/problems/rotate-array/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      */
     public void rotate(int[] nums, int k) {
+        int n = nums.length;
+        int []result = new int[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = nums[(i + n - k % n) % n];
+        }
+        System.arraycopy(result, 0, nums, 0, result.length);
+        System.out.println(Arrays.toString(nums));
+    }
 
+    /**
+     * 翻转数组做法
+     * @param nums
+     * @param k
+     */
+    public void rotate2(int[] nums, int k) {
+        k %= nums.length;
+        reverse(nums, 0, nums.length - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+    }
+
+    public void reverse(int[] nums, int start, int end) {
+        while (start < end) {
+            int temp = nums[start];
+            nums[start] = nums[end];
+            nums[end] = temp;
+            start++;
+            end--;
+        }
+    }
+
+    /**
+     * 13* 买卖股票 超时
+     * <a href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public int maxProfit1_wrong(int[] prices) {
+        int maxProfit = 0;
+        for (int i = 1; i < prices.length; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                maxProfit = Math.max(maxProfit, prices[i] - prices[j]);
+            }
+        }
+        System.out.println(maxProfit);
+        return maxProfit;
+    }
+
+    public int maxProfit1(int[] prices) {
+        int minPrice = prices[0];
+        int maxProfit = 0;
+        for (int i = 1; i < prices.length; i++) {
+            maxProfit = Math.max(maxProfit, prices[i] - minPrice);
+            minPrice = Math.min(minPrice, prices[i]);
+        }
+        System.out.println(maxProfit);
+        return maxProfit;
+    }
+
+    /**
+     * 14* 买卖股票进阶题 动态规划 / 贪心算法
+     * <a href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     * @param prices
+     * @return
+     */
+    public int maxProfit(int[] prices) {
+        /*int [][]dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][1] = Math.max(dp[i - 1][0] - prices[i], dp[i - 1][1]);
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+        }
+        System.out.println(dp[prices.length - 1][0]);
+        return dp[prices.length - 1][0];*/
+        int result = 0;
+        for (int i = 1; i < prices.length; i++) {
+            result += Math.max(0, prices[i] - prices[i - 1]);
+        }
+        System.out.println(result);
+        return result;
+    }
+
+    /**
+     * 15 * 动态规划/贪心
+     * 跳跃游戏
+     * <a href="https://leetcode.cn/problems/jump-game/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean canJump(int[] nums) {
+        /*动态规划
+        int []dp = new int[nums.length];
+        Arrays.fill(dp, 0);
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (!(dp[j] == 0 || (dp[j] == 1 && nums[j] < i - j))) {
+                    dp[i] = 1;
+                    break;
+                }
+            }
+        }
+        System.out.println(Arrays.toString(dp));
+        return dp[nums.length - 1] == 1;*/
+
+        int distance = 0;
+        for (int i = 0; i < nums.length && i <= distance; i++) {
+            distance = Math.max(distance, i + nums[i]);
+        }
+        return distance >= nums.length - 1;
+    }
+
+    /**
+     * 16* 跳跃游戏2 dp 复杂度略高， 贪心算法 反向查找O(n)
+     * <a href="https://leetcode.cn/problems/jump-game-ii/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     * @param nums
+     * @return
+     */
+    public int jump(int[] nums) {
+        int []dp = new int[nums.length];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if ((dp[j] < Integer.MAX_VALUE && nums[j] >= i - j)) {
+                    dp[i] = Math.min(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        System.out.println(Arrays.toString(dp));
+        return dp[nums.length - 1];
+    }
+
+    /**
+     * 17* H指数
+     * <a href="https://leetcode.cn/problems/h-index/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     * @param citations
+     * @return
+     */
+    public int hIndex(int[] citations) {
+        /*int []H = new int[citations.length];
+        for (int i = 0; i < citations.length; i++) {
+            for (int j = 0; j < citations.length; j++) {
+                if (citations[i] > j) {
+                    H[j]++;
+                }
+            }
+        }
+        for (int i = H.length - 1; i >= 0; i--) {
+            if (H[i] > i) {
+                System.out.println(i + 1);
+                return i + 1;
+            }
+        }
+        return 0;*/
+        int h = 0;
+        int i = citations.length - 1;
+        Arrays.sort(citations);
+        while (h <= citations.length && i >= 0) {
+            if (citations[i] > h) {
+                h++;
+            }
+            i--;
+        }
+        System.out.println(h);
+        return h;
+    }
+
+    /**
+     * Your RandomizedSet object will be instantiated and called as such:
+     * RandomizedSet obj = new RandomizedSet();
+     * boolean param_1 = obj.insert(val);
+     * boolean param_2 = obj.remove(val);
+     * int param_3 = obj.getRandom();
+     * 18 * O(1)时间插入删除获取元素
+     * <a href="https://leetcode.cn/problems/insert-delete-getrandom-o1/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    class RandomizedSet {
+        List<Integer> list ;
+
+        public RandomizedSet() {
+            list = new ArrayList<>();
+        }
+
+        public boolean insert(int val) {
+            if (list.contains(val)) {
+                return false;
+            }
+            return list.add(val);
+        }
+
+        public boolean remove(int val) {
+            int index = list.indexOf(val);
+            if (index < 0) {
+                return false;
+            }
+            list.remove(index);
+            return true;
+        }
+
+        public int getRandom() {
+            return list.get(new Random().nextInt(list.size()));
+        }
+    }
+
+    /**
+     * 19 数组乘积
+     * <a href="https://leetcode.cn/problems/product-of-array-except-self/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     * @param nums
+     * @return
+     */
+    public int[] productExceptSelf(int[] nums) {
+        int []answer = new int[nums.length];
+        int []dp = new int[nums.length];
+        int []np = new int[nums.length];
+        dp[0] = nums[0];
+        np[nums.length - 1] = nums[nums.length - 1];
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = dp[i - 1] * nums[i];
+        }
+        for (int i = nums.length - 2; i >= 0; i--) {
+            np[i] = np[i + 1] * nums[i];
+        }
+        answer[0] = np[1];
+        answer[nums.length - 1] = dp[nums.length - 2];
+        for (int i = 1; i < nums.length - 1; i++) {
+            answer[i] = dp[i - 1] * np[i + 1];
+        }
+        System.out.println(Arrays.toString(answer));
+        System.out.println(Arrays.toString(dp));
+        System.out.println(Arrays.toString(np));
+        return answer;
+    }
+
+    /**
+     * 20* 加油站 贪心，实际就是二重循环跳过一些一定不可以的情况
+     * <a href="https://leetcode.cn/problems/gas-station/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int n = gas.length;
+        int i = 0;
+        while (i < n) {
+            int leftGas = 0;
+            int j = 0;
+            while (j < n) {
+                leftGas += gas[(i + j) % n] - cost[(i + j) % n];
+                if (leftGas < 0) {
+                    break;
+                }
+                j++;
+            }
+            if (j == n) {
+                System.out.println(i);
+               return i;
+            } else {
+                i = i + j + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 21 * 分发糖果
+     * <a href="https://leetcode.cn/problems/candy/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     * @param ratings
+     * @return
+     */
+    public int candy(int[] ratings) {
+        int []candy = new int[ratings.length];
+        Arrays.fill(candy, 1);
+        for (int i = 1; i < ratings.length; i++) {
+            if (ratings[i] > ratings[i - 1]) {
+                candy[i] = candy[i - 1] + 1;
+            }
+        }
+        for (int i = candy.length - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                candy[i] = Math.max(candy[i], candy[i + 1] + 1);
+            }
+        }
+//        System.out.println(Arrays.toString(ratings));
+//        System.out.println(Arrays.toString(candy));
+//        System.out.println(Arrays.stream(candy).sum());
+        return Arrays.stream(candy).sum();
     }
 
 
