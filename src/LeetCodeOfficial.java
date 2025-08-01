@@ -211,7 +211,112 @@ public class LeetCodeOfficial {
         return right - left - 1;
     }
 
+    /**
+     * 接雨水官解
+     * <a href="https://leetcode.cn/problems/trapping-rain-water/solutions/692342/jie-yu-shui-by-leetcode-solution-tuvc/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     * @param height
+     * @return
+     */
+    public int trap(int[] height) {
+//         方法一 双向动态规划记录左右最大值
+        int leftMax[] = new int[height.length], rightMax[] = new int[height.length];
+        leftMax[0] = height[0];
+        for (int i = 1; i < height.length; i++) {
+            leftMax[i] = Math.max(leftMax[i - 1], height[i]);
+        }
 
+        rightMax[height.length - 1] = height[height.length - 1];
+        for (int i = height.length - 2; i >= 0; i--) {
+            rightMax[i] = Math.max(rightMax[i + 1], height[i]);
+        }
 
+        int water = 0;
+        for (int i = height.length - 1; i >= 0; i--) {
+            water += Math.min(leftMax[i], rightMax[i]) - height[i];
+        }
+        return water;
+    }
+
+    /**
+     * KMP算法
+     * @param haystack
+     * @param needle
+     * @return
+     */
+    public int strStr(String haystack, String needle) {
+        int n = haystack.length(), m = needle.length();
+        if (m == 0) {
+            return 0;
+        }
+        int[] pi = new int[m];
+        for (int i = 1, j = 0; i < m; i++) {
+            while (j > 0 && needle.charAt(i) != needle.charAt(j)) {
+                j = pi[j - 1];
+            }
+            if (needle.charAt(i) == needle.charAt(j)) {
+                j++;
+            }
+            pi[i] = j;
+        }
+        for (int i = 0, j = 0; i < n; i++) {
+            while (j > 0 && haystack.charAt(i) != needle.charAt(j)) {
+                j = pi[j - 1];
+            }
+            if (haystack.charAt(i) == needle.charAt(j)) {
+                j++;
+            }
+            if (j == m) {
+                return i - m + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 验证回文串
+     * https://leetcode.cn/problems/valid-palindrome/?envType=study-plan-v2&envId=top-interview-150
+     * @param s
+     * @return
+     */
+    public boolean isPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            while (left < right && !Character.isLetterOrDigit(s.charAt(left))) {
+                left++;
+            }
+            while (left < right && !Character.isLetterOrDigit(s.charAt(right))) {
+                right--;
+            }
+            if (left < right) {
+                if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {
+                    return false;
+                }
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    /**
+     * 两数之和 双指针做法
+     * @param numbers
+     * @param target
+     * @return
+     */
+    public int[] twoSum(int[] numbers, int target) {
+        int i = 0, j = numbers.length - 1;
+        while(i < j) {
+            if(numbers[i] + numbers[j] == target) {
+                break;
+            }
+            if(numbers[i] + numbers[j] < target) {
+                i++;
+            } else if(numbers[i] + numbers[j] > target) {
+                j--;
+            }
+        }
+        return new int[]{i+1,j+1};
+    }
 
 }
