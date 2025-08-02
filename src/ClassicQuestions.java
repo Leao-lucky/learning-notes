@@ -1,220 +1,16 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class LeetCode {
-
-    /**
-     * <a href="https://leetcode.cn/problems/two-sum/description/">...</a>
-     *
-     * @param nums 自解
-     */
-    public int[] twoSumAnswer(int[] nums, int target) {
-        for (int i = 0; i < nums.length; i++) {
-            for (int j = i + 1; j < nums.length; j++) {
-                if (nums[i] + nums[j] == target) {
-                    return new int[]{i, j};
-                }
-            }
-        }
-        return new int[]{0, 0};
-    }
-
-    /**
-     * <a href="https://leetcode.cn/problems/two-sum/description/">...</a>
-     *
-     * @param nums 官解
-     */
-    public int[] twoSumSolution(int[] nums, int target) {
-        Map<Integer, Integer> hashtable = new HashMap<Integer, Integer>();
-        for (int i = 0; i < nums.length; ++i) {
-            if (hashtable.containsKey(target - nums[i])) {
-                return new int[]{hashtable.get(target - nums[i]), i};
-            }
-            hashtable.put(nums[i], i);
-        }
-        return new int[0];
-    }
-
-    public class ListNode {
-        int val;
-        ListNode next;
-
-        ListNode() {
-        }
-
-        ListNode(int val) {
-            this.val = val;
-        }
-
-        ListNode(int val, ListNode next) {
-            this.val = val;
-            this.next = next;
-        }
-    }
-
-    /**
-     * <a href="https://leetcode.cn/problems/add-two-numbers/description/">...</a>
-     */
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode head = new ListNode();
-        ListNode result = new ListNode();
-        head.next = result;
-        int carry = 0;
-        while (l1 != null || l2 != null || carry != 0) {
-            int a = 0, b = 0;
-            if (l1 != null) {
-                a = l1.val;
-                l1 = l1.next;
-            }
-            if (l2 != null) {
-                b = l2.val;
-                l2 = l2.next;
-            }
-            if (a + b + carry >= 10) {
-                result.val = (a + b + carry) % 10;
-                carry = 1;
-            } else {
-                result.val = a + b + carry;
-                carry = 0;
-            }
-            if (l1 != null || l2 != null || carry != 0) {
-                result.next = new ListNode();
-                result = result.next;
-            }
-        }
-        return head.next;
-    }
-
-
-    /**
-     * 求最长不重复字串
-     * <a href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/">...</a>
-     * 此解法超时
-     */
-    public int lengthOfLongestSubstring(String s) {
-        if (s.length() <= 0) {
-            return 0;
-        }
-        int start = 0, end = 0, len = 1;
-        HashMap<Character, Integer> map = new HashMap<>();
-        map.put(s.charAt(0), 0);
-        while (start < s.length() && end < s.length() - 1) {
-            while ((end + 1) < s.length() && !map.containsKey(s.charAt(end + 1))) {
-                map.put(s.charAt(end + 1), end + 1);
-                end++;
-            }
-            len = Math.max(len, end - start + 1);
-            map.remove(s.charAt(start));
-            start++;
-        }
-        return len;
-    }
-
-
-    /**
-     * 寻找两个正序数组中位数
-     * 暴力，归并排序 + 取中位数 O(N)
-     * <a href="https://leetcode.cn/problems/median-of-two-sorted-arrays/">...</a>
-     */
-    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-        int[] num3 = new int[nums1.length + nums2.length];
-        int length = nums1.length + nums2.length;
-        int cursor = 0;
-        double result = 0;
-        for (int i = 0, j = 0; i < nums1.length || j < nums2.length; cursor++) {
-            if (i >= nums1.length) {
-                num3[cursor] = nums2[j++];
-            } else if (j >= nums2.length) {
-                num3[cursor] = nums1[i++];
-            } else if (nums1[i] < nums2[j]) {
-                num3[cursor] = nums1[i++];
-            } else {
-                num3[cursor] = nums2[j++];
-            }
-            System.out.print(Arrays.toString(num3));
-            if (length % 2 == 0 && cursor == length / 2) {
-                result = (num3[cursor] + num3[cursor - 1]) / 2.0;
-                break;
-            } else if (length % 2 != 0 && cursor == length / 2) {
-                result = num3[cursor];
-                break;
-            }
-        }
-        return result;
-    }
-
-    /*5*
-     * 最长回文数
-     * <a href="https://leetcode.cn/problems/longest-palindromic-substring/submissions/637679792/">...</a>
-     * dp[i][j] i 字符串下标 j子串长度
-     */
-    public String longestPalindrome(String s) {
-        if (s.length() <= 1) {
-            return s;
-        }
-        int[][] dp = new int[s.length()][s.length() + 1];
-        dp[0][0] = 0;
-        for (int i = 0; i < s.length(); i++) {
-            dp[i][1] = 1;
-        }
-        for (int i = 0; i < s.length(); i++) {
-            if (i + 1 < s.length() && s.charAt(i) == s.charAt(i + 1)) {
-                dp[i][2] = 1;
-            } else {
-                dp[i][2] = 0;
-            }
-        }
-        for (int j = 3; j <= s.length(); j++) {
-            for (int i = 0; i < s.length(); i++) {
-                if (i + 1 >= s.length() || i + j - 1 >= s.length()) {
-                    dp[i][j] = 0;
-                } else {
-                    dp[i][j] = dp[i + 1][j - 2] == 1 && s.charAt(i) == s.charAt(i + j - 1) ? 1 : 0;
-                }
-
-            }
-        }
-//        for (int i = 0; i < s.length(); i++) {
-//            for (int j = 0; j <= s.length(); j++) {
-//                System.out.print("(" + i + "," + j + ")=" + dp[i][j] + " ");
-//                if (dp[i][j] == 1) {
-//                    System.out.print(s.substring(i, Math.min(i + j, s.length())));
-//                }
-//            }
-//            System.out.println();
-//        }
-
-        for (int j = s.length(); j > 0; j--) {
-            for (int i = 0; i < s.length(); i++) {
-                if (dp[i][j] == 1) {
-                    return s.substring(i, i + j);
-                }
-            }
-        }
-        return s;
-    }
-
-    /*6* Z字符串变换
-     * <a href="https://leetcode.cn/problems/zigzag-conversion/description/">...</a>
-     */
-//    public String zConvert(String s, int numRows) {
-//        int [][]result = new int[1000][1000];
-//        for (int i = 0; i < s.length(); i++) {
-//            int val = i % (numRows * 2 - 2);
-//            int column = val - numRows + 1;
-//            int row =
-//            result[][i % numRows] = s.charAt(i);
-//        }
-//    }
+/**
+ * 面试经典150题
+ * 刷题记录
+ * <a href="https://leetcode.cn/studyplan/top-interview-150/">...</a>
+ */
+public class ClassicQuestions {
 
     /**
      * 7* 合并有序数组，我用的是归并排序
      * <a href="https://leetcode.cn/problems/merge-sorted-array/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param nums1
-     * @param m
-     * @param nums2
-     * @param n
      */
     public void merge(int[] nums1, int m, int[] nums2, int n) {
         int i = 0, j = 0;
@@ -243,9 +39,6 @@ public class LeetCode {
     /**
      * 8* 去除指定元素
      *
-     * @param nums
-     * @param val
-     * @return
      */
     public int removeElement(int[] nums, int val) {
         int j = 0;
@@ -260,8 +53,6 @@ public class LeetCode {
     /**
      * 9* 去除重复元素，保持相对顺序
      *
-     * @param nums
-     * @return
      */
     public int removeDuplicates(int[] nums) {
         HashMap<Integer, Integer> map = new HashMap<>();
@@ -280,8 +71,6 @@ public class LeetCode {
      * <a href="https://leetcode.cn/problems/remove-duplicates-from-sorted-array-ii/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      * 10* 去除重复元素，保持相对顺序
      *
-     * @param nums
-     * @return
      */
     public int removeDuplicates2(int[] nums) {
         if (nums.length <= 2) {
@@ -303,8 +92,6 @@ public class LeetCode {
      * 11* 多数元素
      * <a href="https://leetcode.cn/problems/majority-element/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param nums
-     * @return
      */
     public int majorityElement(int[] nums) {
         HashMap<Integer, Integer> map = new HashMap<>();
@@ -342,8 +129,6 @@ public class LeetCode {
     /**
      * 翻转数组做法
      *
-     * @param nums
-     * @param k
      */
     public void rotate2(int[] nums, int k) {
         k %= nums.length;
@@ -392,8 +177,6 @@ public class LeetCode {
      * 14* 买卖股票进阶题 动态规划 / 贪心算法
      * <a href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param prices
-     * @return
      */
     public int maxProfit(int[] prices) {
         /*int [][]dp = new int[prices.length][2];
@@ -445,8 +228,6 @@ public class LeetCode {
      * 16* 跳跃游戏2 dp 复杂度略高， 贪心算法 反向查找O(n)
      * <a href="https://leetcode.cn/problems/jump-game-ii/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param nums
-     * @return
      */
     public int jump(int[] nums) {
         int[] dp = new int[nums.length];
@@ -467,8 +248,6 @@ public class LeetCode {
      * 17* H指数
      * <a href="https://leetcode.cn/problems/h-index/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param citations
-     * @return
      */
     public int hIndex(int[] citations) {
         /*int []H = new int[citations.length];
@@ -508,7 +287,7 @@ public class LeetCode {
      * 18 * O(1)时间插入删除获取元素
      * <a href="https://leetcode.cn/problems/insert-delete-getrandom-o1/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      */
-    class RandomizedSet {
+    static class RandomizedSet {
         List<Integer> list;
 
         public RandomizedSet() {
@@ -540,8 +319,6 @@ public class LeetCode {
      * 19 数组乘积
      * <a href="https://leetcode.cn/problems/product-of-array-except-self/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param nums
-     * @return
      */
     public int[] productExceptSelf(int[] nums) {
         int[] answer = new int[nums.length];
@@ -597,8 +374,6 @@ public class LeetCode {
      * 21 * 分发糖果 两次贪心
      * <a href="https://leetcode.cn/problems/candy/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param ratings
-     * @return
      */
     public int candy(int[] ratings) {
         int[] candy = new int[ratings.length];
@@ -621,9 +396,7 @@ public class LeetCode {
 
     /**
      * 22* 接雨水
-     *
-     * @param height
-     * @return
+     *<a href="https://leetcode.cn/problems/trapping-rain-water/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      */
     public int trap(int[] height) {
         int[] dp = new int[height.length];
@@ -673,8 +446,6 @@ public class LeetCode {
      * 23* 罗马数字转整数
      * <a href="https://leetcode.cn/problems/roman-to-integer/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param s
-     * @return
      */
     public int romanToInt(String s) {
         Map<String, Integer> map = new HashMap<>() {{
@@ -710,8 +481,6 @@ public class LeetCode {
      * 24* 整数转罗马
      * <a href="https://leetcode.cn/problems/integer-to-roman/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param num
-     * @return
      */
     public String intToRoman(int num) {
         String[] THOUSANDS = new String[]{"", "M", "MM", "MMM"};
@@ -756,8 +525,6 @@ public class LeetCode {
      * 27 *反转字符串中的单词
      * <a href="https://leetcode.cn/problems/reverse-words-in-a-string/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param s
-     * @return
      */
     public String reverseWords(String s) {
         String[] split = s.trim().split("\s+");
@@ -775,9 +542,6 @@ public class LeetCode {
      * 28* Z字变换
      * <a href="https://leetcode.cn/problems/zigzag-conversion/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param s
-     * @param numRows
-     * @return
      */
     public String convert(String s, int numRows) {
         if (numRows <= 1) {
@@ -804,10 +568,6 @@ public class LeetCode {
     /**
      * 29* 找字符串
      * <a href="https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
-     *
-     * @param haystack
-     * @param needle
-     * @return
      */
     public int strStr(String haystack, String needle) {
         return haystack.indexOf(needle);
@@ -867,10 +627,8 @@ public class LeetCode {
 
     /**
      * 31* 验证回文串
-     * https://leetcode.cn/problems/valid-palindrome/?envType=study-plan-v2&envId=top-interview-150
+     * <a href="https://leetcode.cn/problems/valid-palindrome/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param s
-     * @return
      */
     public boolean isPalindrome(String s) {
         if (s == null || s.isEmpty()) {
@@ -901,9 +659,6 @@ public class LeetCode {
      * 32* 子序列
      * <a href="https://leetcode.cn/problems/is-subsequence/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param s
-     * @param t
-     * @return
      */
     public boolean isSubsequence(String s, String t) {
         int s1 = 0, s2 = 0;
@@ -926,10 +681,6 @@ public class LeetCode {
 
     /**
      * 33* 两数之和 二分查找做法
-     *
-     * @param numbers
-     * @param target
-     * @return
      */
     public int[] twoSum(int[] numbers, int target) {
         for (int i = 0; i < numbers.length - 1; i++) {
@@ -947,8 +698,6 @@ public class LeetCode {
      * 34*最大容器
      * <a href="https://leetcode.cn/problems/container-with-most-water/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param height
-     * @return
      */
     public int maxArea(int[] height) {
         int start = 0, end = height.length - 1;
@@ -970,8 +719,6 @@ public class LeetCode {
      * 35 * 三数之和
      * <a href="https://leetcode.cn/problems/3sum/?envType=study-plan-v2&envId=top-interview-150">...</a>
      *
-     * @param nums
-     * @return
      */
     public List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
@@ -1029,10 +776,7 @@ public class LeetCode {
 
     /**
      * 37 * 串联子串,固定窗口大小，按字母平移每个窗口都暴力判断需要循环判断s.lenghth - subLen次
-     *
-     * @param s
-     * @param words
-     * @return
+     *<a href="https://leetcode.cn/problems/substring-with-concatenation-of-all-words/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      */
     public List<Integer> findSubstring_exceed_time(String s, String[] words) {
         if (words == null || words.length == 0) {
@@ -1067,11 +811,8 @@ public class LeetCode {
     }
 
     /**
-     * 37 * 串联子串,动态滑动窗口左右边界 外层循环n次，一个单词长度，因为窗口每次移动一次只需要错位一个单词长度即可覆盖所有情况
-     *
-     * @param s
-     * @param words
-     * @return
+     * 37 * 串联子串,固定窗口大小，按字母平移每个窗口都暴力判断需要循环判断s.lenghth - subLen次
+     *<a href="https://leetcode.cn/problems/substring-with-concatenation-of-all-words/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
      */
     public List<Integer> findSubstring(String s, String[] words) {
         if (words == null || words.length == 0) {
@@ -1124,10 +865,6 @@ public class LeetCode {
     /**
      * 38* 最小覆盖子串
      * <a href="https://leetcode.cn/problems/minimum-window-substring/?envType=study-plan-v2&envId=top-interview-150">...</a>
-     *
-     * @param s
-     * @param t
-     * @return
      *
      */
     public String minWindow(String s, String t) {
@@ -1198,4 +935,350 @@ public class LeetCode {
 
     }
 
+    /**
+     * 39* 有效的数独
+     * <a href="https://leetcode.cn/problems/valid-sudoku/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean isValidSudoku(char[][] board) {
+        int [][]colume = new int[board.length][board.length];
+        int [][]row = new int[board.length][board.length];
+        int [][][]subBox = new int[board.length / 3][board.length / 3][9];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != '.') {
+                    int content = board[i][j] - '0' - 1;
+                    row[i][content]++;
+                    colume[content][j]++;
+                    subBox[i / 3][j / 3][content]++;
+                    if (row[i][content] > 1 || colume[content][j] > 1 || subBox[i / 3][j / 3][content] > 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 40* 螺旋矩阵
+     *<a href="https://leetcode.cn/problems/spiral-matrix/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        List<Integer> res = new ArrayList<>();
+        HashMap <Integer,Integer> map = new HashMap<>();
+        int i = 0, j = 0;
+        int flag = 0;
+        while (i >= 0 && i < m && j >= 0 && j < n) {
+            res.add(matrix[i][j]);
+            map.put(i * n + j, 1);
+            if (flag % 4 == 0) {//当前变换是j++
+                if ((j + 1) >= n || map.containsKey(i * n + j + 1)) {
+                    flag++;
+                    i++;
+                    if (map.containsKey(i * n + j)) {
+                        break;
+                    }
+                } else {
+                    j++;
+                }
+            } else if (flag % 4 == 1) {//当前变换是i++
+                if ((i + 1) >= m || map.containsKey((i + 1) * n + j)) {
+                    flag++;
+                    j--;
+                    if (map.containsKey(i * n + j)) {
+                        break;
+                    }
+                } else {
+                    i++;
+                }
+            } else if (flag % 4 == 2) {//当前变换是j--
+                if ((j - 1) < 0 || map.containsKey(i * n + j - 1)) {
+                    flag++;
+                    i--;
+                    if (map.containsKey(i * n + j)) {
+                        break;
+                    }
+                } else {
+                    j--;
+                }
+            } else {
+                if ((i - 1) < 0 || map.containsKey((i - 1) * n + j)) {
+                    flag++;
+                    j++;
+                    if (map.containsKey(i * n + j)) {
+                        break;
+                    }
+                } else {
+                    i--;
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 41 * 旋转图像 矩阵知识 先矩阵转置 再行反转
+     * <a href="https://leetcode.cn/problems/rotate-image/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public void rotate(int[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = i; j < matrix.length; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][matrix.length - j -1];
+                matrix[i][matrix.length - j - 1] = temp;
+            }
+        }
+    }
+
+    /**
+     * 42 * 矩阵置零
+     *<a href="https://leetcode.cn/problems/set-matrix-zeroes/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public void setZeroes(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int temp = matrix[0][0];
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == 0) {
+                matrix[0][0] = 0;
+                break;
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            if (matrix[m - 1][j] == 0) {
+                matrix[m - 1][0] = 0;
+                break;
+            }
+        }
+        for (int i = m - 1; i >= 0; i--) {
+            if (matrix[i][n - 1] == 0) {
+                matrix[m - 1][n - 1] = 0;
+                break;
+            }
+        }
+        for (int j = n - 1; j > 0; j--) {
+            if (matrix[0][j] == 0 || temp == 0) {
+                matrix[0][n - 1] = 0;
+                break;
+            }
+        }
+        for (int i = 1; i < m - 1; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    break;
+                }
+            }
+        }
+        for (int j = 1; j < n - 1; j++) {
+            for (int i = 0; i < m; i++) {
+                if (matrix[i][j] == 0) {
+                    matrix[0][j] = 0;
+                    break;
+                }
+            }
+        }
+        for (int i = 1; i < m - 1; i++) {
+            if (matrix[i][0] == 0) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        for (int j = 1; j < n - 1; j++) {
+            if (matrix[0][j] == 0) {
+                for (int i = 0; i < m; i++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        if (matrix[0][n - 1] == 0) {
+            for (int j = 1; j < n; j++) {
+                matrix[0][j] = 0;
+            }
+            temp = 0;
+        }
+        if (matrix[m -1][n - 1] == 0) {
+            for (int i = m - 1; i >= 0; i--) {
+                matrix[i][n - 1] = 0;
+            }
+        }
+        if (matrix[m - 1][0] == 0) {
+            for (int j = 0; j < n; j++) {
+                matrix[m - 1][j] = 0;
+            }
+        }
+        if (matrix[0][0] == 0) {
+            for (int i = 0; i < m; i++) {
+                matrix[i][0] = 0;
+            }
+        }
+        if (temp == 0) {
+            matrix[0][0] = 0;
+        }
+    }
+
+    /**
+     * 43 * 矩阵 生命游戏
+     * <a href="https://leetcode.cn/problems/game-of-life/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public void gameOfLife(int[][] board) {
+        int [][] newBoard = new int[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                int state = getLiftCellState(board, i , j);
+                if (board[i][j] == 1) {
+                    if (state < 2 || state > 3) {
+                        newBoard[i][j] = 0;
+                    } else {
+                        newBoard[i][j] = 1;
+                    }
+                } else {
+                    if (state == 3) {
+                        newBoard[i][j] = 1;
+                    } else {
+                        newBoard[i][j] = 0;
+                    }
+
+                }
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            System.arraycopy(newBoard[i], 0, board[i], 0, board[0].length);
+        }
+    }
+
+    private int getLiftCellState(int[][] board, int i , int j) {
+        int m = board.length;
+        int n = board[0].length;
+        int state = 0;
+        if (i - 1 >= 0 && j - 1 >= 0) {
+            state += board[i - 1][j - 1];
+        }
+        if (i - 1 >= 0) {
+            state += board[i - 1][j];
+        }
+        if (j - 1 >= 0) {
+            state += board[i][j - 1];
+        }
+        if (i + 1 < m) {
+            state += board[i + 1][j];
+        }
+        if (j + 1 < n) {
+            state += board[i][j + 1];
+        }
+        if (i + 1 < m && j + 1 < n) {
+            state += board[i + 1][j + 1];
+        }
+        if (i - 1 >= 0 && j + 1 < n) {
+            state += board[i - 1][j + 1];
+        }
+        if (i + 1 < m && j - 1 >= 0) {
+            state += board[i + 1][j - 1];
+        }
+
+        return state;
+    }
+
+    /**
+     * 44 * 赎金信 哈希表
+     * <a href="https://leetcode.cn/problems/ransom-note/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean canConstruct(String ransomNote, String magazine) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < magazine.length(); i++) {
+            char ch = magazine.charAt(i);
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        }
+        for (int i = 0; i < ransomNote.length(); i++) {
+            char ch = ransomNote.charAt(i);
+            map.put(ch, map.getOrDefault(ch, 0) - 1);
+            if (map.get(ch) < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 45 *同构字符串 哈希表
+     * <a href="https://leetcode.cn/problems/isomorphic-strings/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean isIsomorphic(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        HashMap<Character, Character> mapA = new HashMap<>();
+        HashMap<Character, Character> mapB = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (mapA.containsKey(s.charAt(i)) && mapA.get(s.charAt(i)) != t.charAt(i)) {
+                return false;
+            }
+            mapA.put(s.charAt(i), t.charAt(i));
+            if (mapB.containsKey(t.charAt(i)) && mapB.get(t.charAt(i)) != s.charAt(i)) {
+                return false;
+            }
+            mapB.put(t.charAt(i), s.charAt(i));
+        }
+        return true;
+    }
+
+    /**
+     * 46 * 单词规律 双映射 哈希表
+     * <a href="https://leetcode.cn/problems/word-pattern/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean wordPattern(String pattern, String s) {
+        String[] words = s.split("\\s+");
+        if (pattern.length() != words.length) {
+            return false;
+        }
+        HashMap<Character, String> mapA = new HashMap<>();
+        HashMap<String, Character> mapB = new HashMap<>();
+        for (int i = 0; i < words.length; i++) {
+            if (mapA.containsKey(pattern.charAt(i))) {
+                if (!Objects.equals(mapA.get(pattern.charAt(i)), words[i])) {
+                    return false;
+                }
+            }
+            mapA.put(pattern.charAt(i), words[i]);
+
+            if (mapB.containsKey(words[i])) {
+                if (!Objects.equals(mapB.get(words[i]), pattern.charAt(i))) {
+                    return false;
+                }
+            }
+            mapB.put(words[i], pattern.charAt(i));
+        }
+        return true;
+    }
+
+    /**
+     * 47 * 有效的字母异位词
+     * <a href="https://leetcode.cn/problems/valid-anagram/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        for (int i = 0; i < t.length(); i++) {
+            map.put(t.charAt(i), map.getOrDefault(t.charAt(i), 0) - 1);
+            if (map.get(t.charAt(i)) == 0) {
+                map.remove(t.charAt(i));
+            }
+        }
+        return map.isEmpty();
+    }
 }

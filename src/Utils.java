@@ -2,8 +2,6 @@ public class Utils {
 
     /**
      * 获取数组最小值对应下标
-     * @param arr
-     * @return
      */
     public static int getMinIndex(int[] arr) {
         int minIndex = 0;
@@ -18,8 +16,7 @@ public class Utils {
     }
 
     /**
-     *
-     * @param arr
+     * 反转数组
      */
     public static <T> void reverseArray(T[] arr) {
         int left = 0, right = arr.length - 1;
@@ -32,6 +29,9 @@ public class Utils {
         }
     }
 
+    /**
+     * 反转数组
+     */
     public static void reverseArray(int[] array) {
         int left = 0, right = array.length - 1;
         while (left < right) {
@@ -43,6 +43,9 @@ public class Utils {
         }
     }
 
+    /**
+     * 二分查找
+     */
     public static int binarySearch(int[] array, int left, int right, int target) {
         while (left <= right) {
             int mid = left + (right - left) / 2;
@@ -57,6 +60,9 @@ public class Utils {
         return -1;
     }
 
+    /**
+     * KMP算法
+     */
     public static int kmp(String haystack, String needle) {
         int n = haystack.length(), m = needle.length();
         if (m == 0) {
