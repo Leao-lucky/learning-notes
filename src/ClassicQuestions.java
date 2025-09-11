@@ -686,8 +686,8 @@ public class ClassicQuestions {
         for (int i = 0; i < numbers.length - 1; i++) {
             int num1 = numbers[i];
             int num2 = target - num1;
-            int index2 = Arrays.binarySearch(numbers, i + 1, numbers.length - 1, num2);
-            if (index2 > 0) {
+            int index2 = Arrays.binarySearch(numbers, i + 1, numbers.length, num2);
+            if (index2 >= 0) {
                 return new int[]{i + 1, index2 + 1};
             }
         }
@@ -1281,4 +1281,58 @@ public class ClassicQuestions {
         }
         return map.isEmpty();
     }
+
+    /**
+     * 48 无重复字符的最长子串
+     * <a href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public int lengthOfLongestSubstring(String s) {
+        if (s.isEmpty()) {
+            return 0;
+        }
+        if (s.length() == 1) {
+            return 1;
+        }
+        int maxLength = 0;
+        int start = 0, end = 1;
+        while (start < s.length() && end < s.length()) {
+            if (!s.substring(start, end).contains(s.substring(end, end + 1))) {
+                end++;
+                maxLength = Math.max(maxLength, end - start);
+            } else {
+                start++;
+            }
+        }
+        return maxLength;
+    }
+
+    /**
+     * 49 ** 有效的括号
+     * <a href="https://leetcode.cn/problems/valid-parentheses/description/?envType=study-plan-v2&envId=top-interview-150">...</a>
+     */
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        Map<Character, Character> map = new HashMap<>() {{
+            put('}', '{');
+            put(']', '[');
+            put(')', '(');
+        }};
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(' || s.charAt(i) == '[' || s.charAt(i) == '{') {
+                stack.push(s.charAt(i));
+            } else {
+                char c = s.charAt(i);
+                if (stack.isEmpty() || !map.containsKey(c)) {
+                    return false;
+                }
+                if (map.get(c) == stack.peek()) {
+                    stack.pop();
+                } else {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
 }
+
