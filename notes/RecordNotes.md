@@ -51,4 +51,3 @@
 | `IllegalStateException`           | 状态错误       |
 | `NumberFormatException`           | 字符串转数字失败   |
 | `ConcurrentModificationException` | 集合并发修改异常   |
-

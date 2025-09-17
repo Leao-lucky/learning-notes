@@ -1,3 +1,4 @@
+[Android面试大全](assets/2023年Android中高级最全面试真题答案解析.pdf)
 ### 1、八大基本数据类型？
 int short long float double byte char boolen
 ### 2、==和equals区别？
@@ -92,7 +93,9 @@ JVM：java虚拟机，java跨平台核心部分
 
 ### 14、自定义view
 测量、绘制  
-Android 的绘制核心是 Canvas + Paint。
+Android 的绘制核心是 Canvas + Paint。  
+***View的显示机制：*** 测量、布局、绘制
+![View 层级图](assets/View视图布局.png)
 
 ### 15、TCP、UDP是哪一层，传输层和网络层界限在哪
 传输层，网络层是主机到主机之间 传输层是进程到进程之间 使用进程号区分  
@@ -136,10 +139,11 @@ fun main() = runBlocking {
 ### 18、volatile作用
 保证内存可见性以及禁止指令重排
 
-## 19、进程与线程的关系
+### 19、进程与线程的关系
 一个进程可能包含多个线程, 进程是资源分配的基本单位。
 线程是CPU调度的最小单元 进程间切换资源消耗更多,线程之间共享内存，
 线程切换更方便而进程间通信需要IPC。
+
 
 
 
