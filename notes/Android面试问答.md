@@ -1,15 +1,25 @@
-[Android面试大全](assets/2023年Android中高级最全面试真题答案解析.pdf)
+[Android面试大全](assets/2023年Android中高级最全面试真题答案解析.pdf)  
+【1.常见的设计模式
+2.Android的启动流程
+Acivity的启动流程
+3.Android的性能优化
+4.JVM内存结构和垃圾回收算法
+5.Handler原理
+6.内存泄漏、内存溢出、内存优化、性能优化工具
+7.RecyclerView的缓存机制、性能优化
+8.应用瘦身
+9.事件分发机制、自定义View流程】
 ### 1、八大基本数据类型？
 int short long float double byte char boolen
 ### 2、==和equals区别？
-1、 ==比较基本数据类型时比较的是数据表面内容而比较对象时比较的是对象地址 
+1、 ==比较的是否是同一个对象
 
-2、 equals是对对象内容的比较
+2、 equals是比较的引用地址，重写了equals方法后比较的是内容
 ### 3、String,StringBuilder,StringBuffer区别？
-1、 String使用字符数组实现，是不可变的，每次对String进行操作都会生成一 个新的变量复制过去,每次修改会频繁产生临时变量消耗内存，线程安全 
+1、 String使用字符数组实现，是不可变的，每次对String进行操作都会生成一个新的变量复制过去,每次修改会频繁产生临时变量消耗内存，线程安全 
 
 2、 StringBuffer也是用字符数组，但是没有被final修饰，修改时直接在原数组中操作，线程安全  
-
+    
 3、 StringBuilder是可变的提供了append等方法修改字串内容，线程不安全
 
 * 如果需要频繁修改字符串并且在多线程环境下使用，应该使用StringBuffer。     
@@ -144,6 +154,42 @@ fun main() = runBlocking {
 线程是CPU调度的最小单元 进程间切换资源消耗更多,线程之间共享内存，
 线程切换更方便而进程间通信需要IPC。
 
+### 20、StaticLayout 使用实例
 
+```
+@Override
+protected void onDraw(Canvas canvas) {
+   super.onDraw(canvas);
+   TextPaint textPaint = new TextPaint();
+   textPaint.setColor(Color.BLACK);
+   textPaint.setTextSize(50);
+   String text = "这是一个使用 StaticLayout 绘制的多行文本示例。它可以根据指定的宽度自动换行。";
+   StaticLayout staticLayout = new StaticLayout(
+       text,
+       textPaint,
+       canvas.getWidth(),
+       Layout.Alignment.ALIGN_NORMAL,
+       1.0f,
+       0.0f,
+       false
+   );
+   staticLayout.draw(canvas);
+}
+```
+### 21、Activity 启动流程
+
+![img.png](assets/Activity启动流程.png)
+
+### 22、RecycleView缓存机制以及优化
+缓存机制：四级缓存  
+一级缓存：mAttachedScrap 和 mChangedScrap ，用来缓存还在屏幕内的 ViewHolder
+mAttachedScrap 存储的是当前还在屏幕中的 ViewHolder；按照 id 和 position 来查找 ViewHolder
+mChangedScrap 表示数据已经改变的 ViewHolder 列表, 存储 notifyXXX 方法时需要改变的 ViewHolder  
+二级缓存：mCachedViews ，用来缓存移除屏幕之外的 ViewHolder，默认情况下缓存容量是 2，可以通过 setViewCacheSize 方法来改变缓存的容量大小。如果 mCachedViews 的容量已满，则会根据 FIFO 的规则移除旧 ViewHolder  
+三级缓存：ViewCacheExtension ，开发给用户的自定义扩展缓存，需要用户自己管理 View 的创建和缓存。感觉没什么用，也没见到什么大神用。  
+四级缓存：RecycledViewPool ，ViewHolder 缓存池，在有限的 mCachedViews 中如果存不下新的 ViewHolder 时，就会把 ViewHolder 存入RecyclerViewPool 中
+
+优化：  
+减少Item复杂度;增大缓存空间大小，空间换时间;关闭动画
 
 
