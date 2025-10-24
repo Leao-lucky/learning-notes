@@ -19,11 +19,11 @@ int short long float double byte char boolen
 1、 String使用字符数组实现，是不可变的，每次对String进行操作都会生成一个新的变量复制过去,每次修改会频繁产生临时变量消耗内存，线程安全 
 
 2、 StringBuffer也是用字符数组，但是没有被final修饰，修改时直接在原数组中操作，线程安全  
-    
+
 3、 StringBuilder是可变的提供了append等方法修改字串内容，线程不安全
 
-* 如果需要频繁修改字符串并且在多线程环境下使用，应该使用StringBuffer。     
-* 如果只在单线程环境下使用，并且不需要频繁修改字符串，可以使用String。     
+* 如果需要频繁修改字符串并且在多线程环境下使用，应该使用StringBuffer。
+* 如果只在单线程环境下使用，并且不需要频繁修改字符串，可以使用String。
 * 如果只在单线程环境下使用，并且需要频繁修改字符串，可以使用StringBuilder。
 ### 4、HashMap的jdk1.8之前和之后的结构区别？ HashMap的put流程？
 1.8以前是数组+链表进行存储，链表过长时查询缓慢，1.8以后引入红黑树，长度超过一定限制链表转化为红黑树
@@ -42,6 +42,9 @@ int short long float double byte char boolen
 ### 5、介绍一下加锁方式有哪些？
 1、synchronized
 对象锁synchronized（object）{….},方法或语句块执行完手动释放  
+锁方法:针对方法 锁定整个方法粒度较大影响性能，其他线程必须等待方法退出 比较简洁  
+锁代码块:仅对任意代码块锁定，灵活，增加代码复杂度但开发可控
+
 2、Lock 
 可以锁定任意一段代码，但是需要手动释放  
 3、ReadWriteLock 读写锁
@@ -191,5 +194,60 @@ mChangedScrap 表示数据已经改变的 ViewHolder 列表, 存储 notifyXXX �
 
 优化：  
 减少Item复杂度;增大缓存空间大小，空间换时间;关闭动画
+
+
+### 23、应用掉帧如何排查
+排查思路:
+![img.png](assets/应用掉帧排查思路.png)
+使用Android Studio Profiler看主线程onDraw onTouch耗时  
+使用Layout Inspector看看布局层数，减少布局复杂度  
+使用adb shell dumpsys gfxinfo查看每帧耗时
+
+### 24、gradle动态引用模块
+* 使用debugImplementation
+```dependencies {
+// 开发用调试库
+debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+
+    // release版本不会打包进APK
+    releaseImplementation project(':dummy') // 或者直接不写
+}
+```
+* 使用「可选依赖」+ 反射加载
+```fun tryLoadDebugModule(context: Context) {
+  try {
+  val clazz = Class.forName("com.example.debug.DebugManager")
+  val instance = clazz.getDeclaredConstructor(Context::class.java).newInstance(context)
+  clazz.getMethod("init").invoke(instance)
+  } catch (e: ClassNotFoundException) {
+  // Debug模块不存在，忽略
+  }
+  }
+```
+* Gradle 构建脚本中动态控制依赖
+```
+if (getGradle().getStartParameter().taskNames.any { it.contains("Debug") }) {
+    dependencies {
+        implementation project(':debugtools')
+    }
+}
+```
+
+### 25、object 是否线程安全
+是线程安全的，但是内部的可变的成员变量不安全，静态类也是这样的
+懒加载也是线程安全的
+lateinit 变量不是线程安全的
+
+### 26、Launcher启动优化
+* 采用合适的启动模式SingleInstance、persistent属性做持久化
+* 采用合适的主题优化启动白屏
+* 图标缓存预加载，耗时任务异步处理
+* AppStartup 或自定义延迟初始化框架
+
+Handler原理 looper怎么按序从队列中获取
+项目中遇到的困难怎么解决的
+观察者模式是怎么实现的
+蓝牙wifi原理
+原生Launcher和其它应用通信
 
 
